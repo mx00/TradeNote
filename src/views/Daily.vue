@@ -1396,7 +1396,7 @@ function getOHLC(date, symbol, type) {
                                 <!-- Forth line -->
                                 <div class="col-12 mt-3" v-show="!spinnerSetups">
                                     <input class="screenshotFile" type="file"
-                                        @change="useSetupImageUpload($event, filteredTrades[itemTradeIndex].trades[tradeIndex].entryTime, filteredTrades[itemTradeIndex].trades[tradeIndex].symbol, filteredTrades[itemTradeIndex].trades[tradeIndex].side)" />
+                                        @change="useSetupImageUpload($event, filteredTrades[itemTradeIndex].trades[tradeIndex].entryTime, filteredTrades[itemTradeIndex].trades[tradeIndex].symbol, filteredTrades[itemTradeIndex].trades[tradeIndex].side, filteredTrades[itemTradeIndex].trades[tradeIndex].id)" />
                                 </div>
 
 
