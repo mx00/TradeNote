@@ -192,6 +192,7 @@ export async function useSetupImageUpload(event, param1, param2, param3, tradeId
         screenshot.symbol = param2
         screenshot.side = param3
         screenshot.tradeId = tradeId
+        screenshot.objectId = undefined
 
     }
     const file = event.target.files[0];
