@@ -212,19 +212,21 @@ async function clickTradesModal(param1, param2, param3) {
                 await Promise.all([resetExcursion(), useResetTags()])
 
                 //For setups I have added setups into filteredTrades. For screenshots and excursions I need to find so I create on each modal page a screenshot and excursion object
-                let findScreenshot = screenshots.find(obj => obj.name == filteredTradeId)
+                let findScreenshots = screenshots.filter(obj => obj.name == filteredTradeId)
                 for (let key in screenshot) delete screenshot[key]
                 candlestickChartFailureMessage.value = null // to avoid message when screenshot is present
 
-                if (findScreenshot) {
+                if (findScreenshots.length > 0) {
                     //console.log(" found screenshot")
-                    for (let key in findScreenshot) {
-                        screenshot[key] = findScreenshot[key]
+                    screenshot.multiple = findScreenshots
+                    for (let key in findScreenshots[0]) {
+                        screenshot[key] = findScreenshots[0][key]
                     }
                 } else {
                     //console.log(" did not find any screenshot")
                     screenshot.side = null
                     screenshot.type = null
+                    screenshot.multiple = []
 
                     /* GET OHLC / CANDLESTICK CHARTS */
 
@@ -1190,8 +1192,10 @@ function getOHLC(date, symbol, type) {
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div v-if="modalDailyTradeOpen">
-                    <div v-if="screenshot.originalBase64">
-                        <Screenshot :screenshot-data="screenshot" source="dailyModal" />
+                    <div v-if="screenshot.multiple && screenshot.multiple.length > 0">
+                        <div v-for="itemScreenshot in screenshot.multiple" :key="itemScreenshot.objectId">
+                            <Screenshot :screenshot-data="itemScreenshot" source="dailyModal" />
+                        </div>
                     </div>
                     <div v-show="!candlestickChartFailureMessage && !screenshot.originalBase64" id="candlestickChart"
                         class="candlestickClass">
