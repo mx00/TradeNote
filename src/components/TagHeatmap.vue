@@ -119,5 +119,41 @@ const tagHeatmapData = computed(() => {
 
         </div>
 
+    
+        <div class="dailyCard p-3 mt-4">
+            <h4>Bubble Heatmap</h4>
+            <small class="text-muted">X = Win Rate, Y = Avg P&L, Size = Trades, Color = Total P&L</small>
+
+            <div style="position:relative;height:380px;border:1px solid #333;border-radius:8px;margin-top:16px;background:linear-gradient(180deg,rgba(0,255,120,.06),rgba(255,80,80,.06));">
+                <div style="position:absolute;left:10px;top:10px;font-size:11px;color:#888;">Higher Avg P&L</div>
+                <div style="position:absolute;right:10px;bottom:8px;font-size:11px;color:#888;">Higher Win Rate →</div>
+
+                <div
+                    v-for="item in tagHeatmapData"
+                    :key="'bubble-' + item.tag"
+                    :title="item.tag + ' | WR: ' + item.winRate + '% | Avg: ' + useThousandCurrencyFormat(item.avgPnl)"
+                    :style="{
+                        position: 'absolute',
+                        left: Math.max(4, Math.min(94, Number(item.winRate))) + '%',
+                        top: Math.max(6, Math.min(88, 88 - ((Number(item.avgPnl || 0) + maxAbsPnl) / (maxAbsPnl * 2)) * 80)) + '%',
+                        width: Math.max(34, Math.min(90, 34 + item.trades * 14)) + 'px',
+                        height: Math.max(34, Math.min(90, 34 + item.trades * 14)) + 'px',
+                        transform: 'translate(-50%, -50%)',
+                        borderRadius: '999px',
+                        background: item.pnl >= 0 ? 'rgba(0,200,117,.7)' : 'rgba(255,77,79,.7)',
+                        border: '1px solid rgba(255,255,255,.35)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        textAlign: 'center',
+                        fontSize: '10px',
+                        padding: '5px',
+                        overflow: 'hidden'
+                    }">
+                    {{ item.tag }}
+                </div>
+            </div>
+        </div>
+
     </div>
 </template>
