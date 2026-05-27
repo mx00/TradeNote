@@ -5,6 +5,7 @@ import Filters from '../components/Filters.vue'
 import { selectedDashTab, spinnerLoadingPage, dashboardIdMounted, totals, amountCase, amountCapital, profitAnalysis, renderData, selectedRatio, dashboardChartsMounted, hasData, satisfactionArray, availableTags, groups, barChartNegativeTagGroups } from '../stores/globals';
 import { useThousandCurrencyFormat, useTwoDecCurrencyFormat, useXDecCurrencyFormat, useMountDashboard, useThousandFormat, useXDecFormat } from '../utils/utils';
 import NoData from '../components/NoData.vue';
+import TagHeatmap from '../components/TagHeatmap.vue';
 
 const dashTabs = [{
     id: "overviewTab",
@@ -30,6 +31,11 @@ const dashTabs = [{
     id: "financialsTab",
     label: "Financials",
     target: "#financialsNav"
+},
+{
+    id: "tagHeatmapTab",
+    label: "Tag Heatmap",
+    target: "#tagHeatmapNav"
 }
 ]
 amountCapital.value = amountCase.value ? amountCase.value.charAt(0).toUpperCase() + amountCase.value.slice(1) : ''
@@ -99,6 +105,9 @@ onBeforeMount(async () => {
                 </nav>
 
                 <div class="tab-content" id="nav-tabContent">
+
+                    <TagHeatmap
+                        v-if="selectedDashTab == 'tagHeatmapTab'" />
 
                     <!-- ============ OVERVIEW ============ -->
                     <div v-bind:class="'tab-pane fade ' + (selectedDashTab == 'overviewTab' ? 'active show' : '')"
