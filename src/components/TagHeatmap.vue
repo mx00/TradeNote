@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { filteredTradesTrades, amountCase } from '../stores/globals'
 import { useThousandCurrencyFormat } from '../utils/utils'
+import TagSymbol3DHeatmap from './TagSymbol3DHeatmap.vue'
 
 const tagHeatmapData = computed(() => {
     const stats = {}
@@ -365,5 +366,6 @@ const bar3dColor = cell => {
             </div>
         </div>
 
+        <TagSymbol3DHeatmap />
     </div>
 </template>
