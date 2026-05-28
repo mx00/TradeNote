@@ -135,6 +135,20 @@ const matrixWinRate = cell => {
     return ((cell.wins / cell.trades) * 100).toFixed(1)
 }
 
+
+const bar3dHeight = cell => {
+    if (!cell) return 10
+    return Math.max(16, Math.min(58, 16 + (Math.abs(cell.pnl) / maxMatrixAbsPnl.value) * 42))
+}
+
+const bar3dColor = cell => {
+    if (!cell) return 'rgba(120,120,120,.15)'
+    const opacity = Math.max(0.28, Math.min(0.95, Math.abs(cell.pnl) / maxMatrixAbsPnl.value))
+    return cell.pnl >= 0
+        ? `rgba(0,200,117,${opacity})`
+        : `rgba(255,77,79,${opacity})`
+}
+
 </script>
 
 <template>
@@ -281,6 +295,69 @@ const matrixWinRate = cell => {
                                     —
                                 </span>
 
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+        <div class="dailyCard p-3 mt-4">
+            <h4>Tag × Symbol 3D Bar Heatmap</h4>
+            <small class="text-muted">
+                Rows = tags, columns = symbols, height/color = P&L strength.
+            </small>
+
+            <div class="table-responsive mt-3">
+                <table class="table table-dark align-middle text-center">
+                    <thead>
+                        <tr>
+                            <th class="text-start">Tag</th>
+                            <th v-for="symbol in tagSymbolMatrix.symbols" :key="'bar-head-' + symbol">
+                                {{ symbol }}
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr v-for="row in tagSymbolMatrix.rows" :key="'bar-row-' + row.tag">
+                            <td class="text-start">
+                                <strong>{{ row.tag }}</strong>
+                            </td>
+
+                            <td v-for="symbol in tagSymbolMatrix.symbols" :key="'bar-cell-' + row.tag + '-' + symbol">
+                                <div
+                                    v-if="row.cells[symbol]"
+                                    class="mx-auto"
+                                    :title="row.tag + ' / ' + symbol + ' | P&L: ' + useThousandCurrencyFormat(row.cells[symbol].pnl)"
+                                    style="width:80px;height:88px;position:relative;perspective:500px;">
+
+                                    <div
+                                        :style="{
+                                            width: '46px',
+                                            height: bar3dHeight(row.cells[symbol]) + 'px',
+                                            position: 'absolute',
+                                            left: '14px',
+                                            bottom: '22px',
+                                            background: bar3dColor(row.cells[symbol]),
+                                            border: '1px solid rgba(255,255,255,.45)',
+                                            transform: 'skewY(-12deg)',
+                                            boxShadow: row.cells[symbol].pnl >= 0
+                                                ? '9px -9px 0 rgba(0,200,117,.22)'
+                                                : '9px -9px 0 rgba(255,77,79,.22)',
+                                            borderRadius: '2px'
+                                        }">
+                                    </div>
+
+                                    <small
+                                        :class="row.cells[symbol].pnl >= 0 ? 'text-success' : 'text-danger'"
+                                        style="position:absolute;left:0;right:0;bottom:0;font-size:10px;">
+                                        {{ useThousandCurrencyFormat(row.cells[symbol].pnl) }}
+                                    </small>
+                                </div>
+
+                                <span v-else class="text-muted">—</span>
                             </td>
                         </tr>
                     </tbody>
