@@ -32,6 +32,8 @@ let filters = ref({
     "screenshots": ["accounts", "grossNet", "positions", "tags"],
 })
 
+let selectedMonthMode = ref(localStorage.getItem('selectedMonthMode') || 'month')
+
 
 
 /*if (selectedDateRange.value) {
@@ -183,12 +185,32 @@ function inputDateRangeCal(param1, param2) {
 }
 
 function inputMonth(param1) {
-    //console.log(" param1 " + param1)
     let temp = {}
-    temp.start = dayjs.tz(param1, timeZoneTrade.value).unix()
-    temp.end = dayjs.tz(param1, timeZoneTrade.value).endOf("month").unix()
+
+    if (selectedMonthMode.value == 'year') {
+        temp.start = dayjs.tz(param1, timeZoneTrade.value).startOf("year").unix()
+        temp.end = dayjs.tz(param1, timeZoneTrade.value).endOf("year").unix()
+    } else {
+        temp.start = dayjs.tz(param1, timeZoneTrade.value).unix()
+        temp.end = dayjs.tz(param1, timeZoneTrade.value).endOf("month").unix()
+    }
+
     selectedMonth.value = temp
-    //console.log(" -> Selected Month "+JSON.stringify(selectedMonth.value))
+}
+
+function inputMonthMode(param1) {
+    selectedMonthMode.value = param1
+    localStorage.setItem('selectedMonthMode', selectedMonthMode.value)
+
+    const currentMonth = dayjs.unix(selectedMonth.value.start).tz(timeZoneTrade.value).format("YYYY-MM")
+    inputMonth(currentMonth)
+}
+
+function inputYear(param1) {
+    let temp = {}
+    temp.start = dayjs.tz(param1 + "-01-01", timeZoneTrade.value).startOf("year").unix()
+    temp.end = dayjs.tz(param1 + "-12-31", timeZoneTrade.value).endOf("year").unix()
+    selectedMonth.value = temp
 }
 
 async function saveFilter() {
@@ -224,6 +246,7 @@ async function saveFilter() {
 
     if (pageId.value == "daily" || pageId.value == "calendar") {
         localStorage.setItem('selectedMonth', JSON.stringify(selectedMonth.value))
+        localStorage.setItem('selectedMonthMode', selectedMonthMode.value)
     }
 
     localStorage.setItem('selectedTags', selectedTags.value)
@@ -398,8 +421,27 @@ const selectAllTags = () => {
 
                 <!-- Month -->
                 <div class="col-12 col-lg-6 mt-1 mt-lg-0 mb-lg-1" v-show="pageId == 'daily' || pageId == 'calendar'">
-                    <input type="month" class="form-control" :value="useDateCalFormatMonth(selectedMonth.start)"
+                    <div class="btn-group mb-2" role="group">
+                        <button type="button"
+                            :class="'btn btn-sm ' + (selectedMonthMode == 'month' ? 'btn-primary' : 'btn-outline-secondary')"
+                            v-on:click="inputMonthMode('month')">
+                            Month
+                        </button>
+                        <button type="button"
+                            :class="'btn btn-sm ' + (selectedMonthMode == 'year' ? 'btn-primary' : 'btn-outline-secondary')"
+                            v-on:click="inputMonthMode('year')">
+                            Whole Year
+                        </button>
+                    </div>
+
+                    <input v-if="selectedMonthMode == 'month'" type="month" class="form-control"
+                        :value="useDateCalFormatMonth(selectedMonth.start)"
                         :selected="selectedMonth.start" v-on:input="inputMonth($event.target.value)">
+
+                    <input v-if="selectedMonthMode == 'year'" type="number" class="form-control"
+                        min="1900" max="2100"
+                        :value="dayjs.unix(selectedMonth.start).tz(timeZoneTrade).format('YYYY')"
+                        v-on:input="inputYear($event.target.value)">
                 </div>
 
                 <!-- Tags -->
