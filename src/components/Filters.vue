@@ -206,6 +206,13 @@ function inputMonthMode(param1) {
     inputMonth(currentMonth)
 }
 
+function inputYear(param1) {
+    let temp = {}
+    temp.start = dayjs.tz(param1 + "-01-01", timeZoneTrade.value).startOf("year").unix()
+    temp.end = dayjs.tz(param1 + "-12-31", timeZoneTrade.value).endOf("year").unix()
+    selectedMonth.value = temp
+}
+
 async function saveFilter() {
     console.log(" -> Save filters: Selected Date Range Cal " + JSON.stringify(selectedDateRange.value))
     console.log(" -> Save filters: Selected Period Range " + JSON.stringify(selectedPeriodRange.value))
@@ -427,8 +434,14 @@ const selectAllTags = () => {
                         </button>
                     </div>
 
-                    <input type="month" class="form-control" :value="useDateCalFormatMonth(selectedMonth.start)"
+                    <input v-if="selectedMonthMode == 'month'" type="month" class="form-control"
+                        :value="useDateCalFormatMonth(selectedMonth.start)"
                         :selected="selectedMonth.start" v-on:input="inputMonth($event.target.value)">
+
+                    <input v-if="selectedMonthMode == 'year'" type="number" class="form-control"
+                        min="1900" max="2100"
+                        :value="dayjs.unix(selectedMonth.start).tz(timeZoneTrade).format('YYYY')"
+                        v-on:input="inputYear($event.target.value)">
                 </div>
 
                 <!-- Tags -->
